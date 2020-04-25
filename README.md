@@ -4,6 +4,25 @@
 
 ## About
 
+### About this branch
+
+This branch adds a near realtime pulse audio plugin for applying spleeter on *everything that comes out of your computer*.
+
+Usage:
+
+1. Run the server: `python -m spleeter.server`
+2. Build and install the plugin:
+```
+cd pulseaudio
+make
+sudo make install
+```
+3. Run the plugin: `pactl load-module module-ladspa-sink plugin=spleeter_ladspa label=vocals sink_master=<your sink>`. You can get your sink by running pactl list sinks and get the name of the main sink.
+4. Alternate it between on and off by sending SIGUSR1 to the server.
+5. Unload the plugin: `pactl unload-module <number printed from command 3>`
+
+### Spleeter
+
 **Spleeter** is the [Deezer](https://www.deezer.com/) source separation library with pretrained models
 written in [Python](https://www.python.org/) and uses [Tensorflow](https://tensorflow.org/). It makes it easy
 to train source separation model (assuming you have a dataset of isolated sources), and provides
