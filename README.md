@@ -17,7 +17,7 @@ cd pulseaudio
 make
 sudo make install
 ```
-3. Run the plugin: `pactl load-module module-ladspa-sink plugin=spleeter_ladspa label=vocals sink_master=<your sink>`. You can get your sink by running pactl list sinks and get the name of the main sink.
+3. Run the plugin: `pactl load-module module-ladspa-sink plugin=spleeter_ladspa label=vocals sink_master=<your sink>`. You can get your sink by running `pactl list sinks` and getting the name of the main sink. You might want to select the new sink to be your default sink or assing already running applications to it. You can use pavucontrol to do so.
 4. Alternate it between on and off by sending SIGUSR1 to the server.
 5. Unload the plugin: `pactl unload-module <number printed from command 3>`
 
