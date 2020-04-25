@@ -4,7 +4,7 @@
 """
     Entrypoint provider for tcp server.
 
-    USAGE: python server.py
+    USAGE: python -m spleeter.server
 """
 
 import socketserver
