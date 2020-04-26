@@ -17,11 +17,24 @@ __author__ = 'Mohamed Elawadi'
 __license__ = 'MIT License'
 
 class LADSPA_TCPServer(socketserver.BaseRequestHandler):
-    _buffer = None
-
     def process(self, channel, sample_rate, sound):
-        #this should be implemented
-        return sound
+        """Process one chunk of data coming from channel
+
+        Parameters
+        ----------
+        channel : int
+            Channel Number from 0 to `k`.
+        sample_rate : int
+            Sample rate (ex. `44100`).
+        sound: numpy array of shape (n,) and type float32
+            Input sound
+
+        Returns
+        ------
+        numpy array of shape (n,) and type float32
+            The processed sound
+        """
+        raise NotImplementedError("process should be implemented")
 
     def handle(self):
         print("got a new request")
@@ -43,9 +56,21 @@ class LADSPA_TCPServer(socketserver.BaseRequestHandler):
             if ret.shape != data.shape:
                 print("the shape of the returned sound: %s doesn't match the shape of the received one: %s", ret.shape, data.shape)
                 ret = data
+            if ret.dtype != 'float32':
+                print("the datatype of the returned data `%s` is not float32", ret.dtype)
+                ret = data
             self.request.sendall(ret.tobytes())
 
     @classmethod
     def serve_forever(cls, port, host="127.0.0.1"):
         tcp_server = socketserver.ThreadingTCPServer((host, port), cls)
         tcp_server.serve_forever()
+
+
+if __name__ == "__main__":
+    class Demo_TCPServer(LADSPA_TCPServer):
+        def process(self, channel, sample_rate, sound):
+            return sound
+
+    print("listening on 8083")
+    Demo_TCPServer.serve_forever(8083)
