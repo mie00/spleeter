@@ -40,10 +40,15 @@ done:
     return ret;
 }
 
-int send_sound(int sockfd, unsigned long sample_rate, long len, void* input, void* output) {
+int send_sound(int sockfd, unsigned long channel, unsigned long sample_rate, long len, void* input, void* output) {
     int ret = 0;
 
     int bytes, sent, received, total;
+
+    bytes = write(sockfd,&channel,sizeof(channel));
+    if (bytes != sizeof(channel)) {
+        error("cannot send channel")
+    }
 
     bytes = write(sockfd,&sample_rate,sizeof(sample_rate));
     if (bytes != sizeof(sample_rate)) {

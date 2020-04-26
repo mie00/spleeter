@@ -21,11 +21,15 @@
 /*****************************************************************************/
 
 /* Instance data for the simple delay line plugin. */
-typedef struct {
 
-  int socket;
+unsigned long ConntectedChannels = 0;
+
+typedef struct {
+  unsigned long m_lChannelNumber;
 
   unsigned long m_fSampleRate;
+
+  int socket;
 
   LADSPA_Data * m_pfBuffer;
 
@@ -67,6 +71,9 @@ instantiateSpleeterAdapter(const LADSPA_Descriptor * Descriptor,
 
   if (psSpleeterAdapter == NULL) 
     return NULL;
+
+  psSpleeterAdapter->m_lChannelNumber = ConntectedChannels;
+  ConntectedChannels++;
   
   psSpleeterAdapter->m_fSampleRate = SampleRate;
   psSpleeterAdapter->m_lBufferSize = 5 * SampleRate;
@@ -97,10 +104,19 @@ activateSpleeterAdapter(LADSPA_Handle Instance) {
   SpleeterAdapter * psSpleeterAdapter;
   psSpleeterAdapter = (SpleeterAdapter *)Instance;
 
+  // reset connected channels
+  ConntectedChannels = 0;
+
   /* Need to reset the delay history in this function rather than
      instantiate() in case deactivate() followed by activate() have
      been called to reinitialise a delay line. */
   memset(psSpleeterAdapter->m_pfBuffer, 
+        0, 
+        sizeof(LADSPA_Data) * psSpleeterAdapter->m_lBufferSize);
+  memset(psSpleeterAdapter->m_pfBufferProcessed, 
+        0, 
+        sizeof(LADSPA_Data) * psSpleeterAdapter->m_lBufferSize);
+  memset(psSpleeterAdapter->m_pfTempBuffer, 
         0, 
         sizeof(LADSPA_Data) * psSpleeterAdapter->m_lBufferSize);
  }
@@ -201,7 +217,7 @@ runSpleeterAdapter(LADSPA_Handle Instance,
 
   if (!is_between(mod(size, psSpleeterAdapter->m_lWritePointer - delay + SampleCount - 1), lastProcessed, psSpleeterAdapter->m_lLastProcessedPointer)) {
     copy_to(psSpleeterAdapter->m_pfBuffer, psSpleeterAdapter->m_pfTempBuffer, size, newRead, diff);
-    send_sound(psSpleeterAdapter->socket, psSpleeterAdapter->m_fSampleRate,
+    send_sound(psSpleeterAdapter->socket, psSpleeterAdapter->m_lChannelNumber, psSpleeterAdapter->m_fSampleRate,
       diff,
       psSpleeterAdapter->m_pfTempBuffer,
       psSpleeterAdapter->m_pfTempBuffer
