@@ -39,6 +39,8 @@ sep = Separator(
 
 class Spleeter_Server(LADSPA_TCPServer):
     def process(self, channel, sample_rate, data):
+        if np.max(data) == np.min(data) == 0:
+            return data
         if should_process:
             return sep.separate(data.astype('float64').reshape((-1, 1)))['vocals'].astype('float32')[:,0]
         else:
