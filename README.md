@@ -4,6 +4,8 @@
 
 ## About
 
+## This repo is archived in favour of the cleaner one https://github.com/mie00/spleeter-realtime
+
 ### About this branch
 
 This branch adds a near realtime pulse audio plugin for applying spleeter on *everything that comes out of your computer*.
